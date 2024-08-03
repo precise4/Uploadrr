@@ -1936,7 +1936,7 @@ class Prep():
             else:
                 video_encode = codec
         else:
-            video_encode = format
+            video_encode = codec
         video_codec = format
         if video_codec == "MPEG Video":
             video_codec = f"MPEG-{mi['media']['track'][1].get('Format_Version')}"

@@ -126,7 +126,6 @@ client = Clients(config=config)
 parser = Args(config)
 
 async def do_the_thing(base_dir):
-    print_banner()
     meta = dict()
     meta['base_dir'] = base_dir
     paths = []
@@ -897,19 +896,6 @@ def get_missing(meta):
 
     console.print()
     return
-
-def print_banner():
-    ascii_art = r"""
-      ┌────────────────────────────────────────────────────────────────────┐      
-      │_____  __________ ______ _______ _______ ________ ________ ________ │      
-      │__  / / /___  __ \___  / __  __ \___    |___  __ \___  __ \___  __ \│      
-      │_  / / / __  /_/ /__  /  _  / / /__  /| |__  / / /__  /_/ /__  /_/ /│      
-      │/ /_/ /  _  ____/ _  /___/ /_/ / _  ___ |_  /_/ / _  _, _/ _  _, _/ │      
-      │\____/   /_/      /_____/\____/  /_/  |_|/_____/  /_/ |_|  /_/ |_|  │      
-      └────────────────────────────────────────────────CvT─x─TheLDU.to─────┘      
-                                                                                 
-    """
-    console.print(Align.center(Text(f"\n\n{ascii_art}\n", style='bold')))
 
 def list_directory(directory):
     items = []

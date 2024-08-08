@@ -9,6 +9,7 @@ import asyncio
 import os
 import sys
 import re
+import tomllib
 import platform
 import multiprocessing
 import logging
@@ -51,12 +52,12 @@ http_trackers = ['FL', 'HDB', 'HDT', 'MTV', 'PTER', 'TTG']
 ############# EDITING BELOW THIS LINE MAY RESULT IN SCRIPT BREAKING #############
 
 python3_path = shutil.which("python3")
-python_cmd = python3_path if python3_path else "python" 
+python_cmd = python3_path if python3_path else "python"
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(base_dir, 'data')
-config_path = os.path.abspath(os.path.join(data_dir, 'config.py'))
-old_config_path = os.path.abspath(os.path.join(data_dir, 'backup', 'old_config.py'))
+config_path = os.path.abspath(os.path.join(data_dir, 'config.toml'))
+old_config_path = os.path.abspath(os.path.join(data_dir, 'backup', 'old_config.toml'))
 minimum_version = Version('1.0.0')
 
 def get_backup_name(path, suffix='_bu'):
@@ -67,15 +68,16 @@ def get_backup_name(path, suffix='_bu'):
         counter += 1
     return path
 
-if not os.path.exists(config_path):  
-    console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.py`")
+if not os.path.exists(config_path):
+    console.print("[bold red] It appears you have no config file, please ensure to configure and place `/data/config.toml`")
     exit()
 
-try:
-    from data.config import config 
-except ImportError as e:
-    console.print(f"[bold red]Error importing config: {str(e)}[/bold red]")
-    exit()
+with open(config_path, "rb") as f:
+    try:
+      config = tomllib.load(f)
+    except:
+      console.print(f"[bold red]Error importing config: {str(e)}[/bold red]")
+      exit()
 
 def reconfigure():
     console.print("[bold red]WARN[/bold red]: Version out of date, automatic upgrade in progress")
@@ -109,17 +111,17 @@ def reconfigure():
     console.print("[dim green]Thanks for using Uploadrr :)")
     exit()
 
-if 'version' not in config or Version(config.get('version')) < minimum_version:  # Check for version and reconfigures
-    reconfigure()
+#if 'version' not in config or Version(config.get('version')) < minimum_version:  # Check for version and reconfigures
+#    reconfigure()
 
-try:
-    from data.backup import example_config
-    if 'version' in example_config.config and Version(example_config.config.get('version')) > Version(config.get('version')):
-        console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is recommended.")
-        console.print("[bold yellow]WARN[/bold yellow]: Simply pass --reconfig")
-except Exception as e:
-    console.print(f"[bold red]Error: {str(e)}[/bold red]")
-    pass
+#try:
+#    from data.backup import example_config
+#    if 'version' in example_config.config and Version(example_config.config.get('version')) > Version(config.get('version')):
+#        console.print("[bold yellow]WARN[/bold yellow]: Config version out of date, updating is recommended.")
+#        console.print("[bold yellow]WARN[/bold yellow]: Simply pass --reconfig")
+#except Exception as e:
+#    console.print(f"[bold red]Error: {str(e)}[/bold red]")
+#    pass
 
 
 client = Clients(config=config)
@@ -134,9 +136,9 @@ async def do_the_thing(base_dir):
             paths.append(os.path.abspath(each))
         else:
             break
-    if meta.get("reconfig", False):
-        reconfigure()        
-    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)    
+#    if meta.get("reconfig", False):
+#        reconfigure()
+    meta, help, before_args = parser.parse(tuple(' '.join(sys.argv[1:]).split(' ')), meta)
     if meta['cleanup'] and os.path.exists(f"{base_dir}/tmp"):
         shutil.rmtree(f"{base_dir}/tmp")
         console.print("[bold green]Successfully emptied tmp directory")
@@ -236,8 +238,8 @@ async def do_the_thing(base_dir):
                 saved_meta = json.load(f)
                 for key, value in saved_meta.items():
                     overwrite_list = [
-                        'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual', 
-                        'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech', 
+                        'path', 'trackers', 'dupe', 'debug', 'anon', 'category', 'type', 'screens', 'nohash', 'manual_edition', 'imdb', 'tmdb_manual', 'mal', 'manual',
+                        'hdb', 'ptp', 'blu', 'no_season', 'no_aka', 'no_year', 'no_dub', 'no_tag', 'no_seed', 'client', 'desclink', 'descfile', 'desc', 'draft', 'region', 'freeleech',
                         'personalrelease', 'unattended', 'season', 'episode', 'torrent_creation', 'qbit_tag', 'qbit_cat', 'skip_imghost_upload', 'imghost', 'manual_source', 'webdv', 'hardcoded-subs'
                     ]
                     if meta.get(key, None) != value and key in overwrite_list:
@@ -246,7 +248,7 @@ async def do_the_thing(base_dir):
                 f.close()
         except FileNotFoundError:
             pass
-        
+
         console.print(Align.center(f"\n\n——— Processing # [bold bright_cyan]{current_file}[/bold bright_cyan] of [bold bright_magenta]{total_files}[/bold bright_magenta] ———"))
         if delay > 0:
             with Progress("[progress.description]{task.description}", TimeRemainingColumn(), transient=True) as progress:
@@ -259,7 +261,7 @@ async def do_the_thing(base_dir):
             meta['imghost'] = config['DEFAULT']['img_host_1']
         if meta['unattended']:
             console.print("[yellow]Running in Auto Mode")
-                
+
         current_file += 1
         prep = Prep(screens=meta.get('screens', 3), img_host=meta.get('imghost', 'imgbox'), config=config)
         meta = await prep.gather_prep(meta=meta, mode='cli')
@@ -303,7 +305,7 @@ async def do_the_thing(base_dir):
             prep.create_torrent(meta, Path(meta['path']), "BASE", meta.get('piece_size_max', 0))
         if int(meta.get('randomized', 0)) >= 1:
             prep.create_random_torrents(meta['base_dir'], meta['uuid'], meta['randomized'], meta['path'])
-            
+
         if meta.get('trackers', None) != None:
             trackers = meta['trackers']
         else:
@@ -313,10 +315,10 @@ async def do_the_thing(base_dir):
         with open (f"{meta['base_dir']}/tmp/{meta['uuid']}/meta.json", 'w') as f:
             json.dump(meta, f, indent=4)
             f.close()
-        confirm = get_confirmation(meta)  
+        confirm = get_confirmation(meta)
         while not confirm:
             # help.print_help()
-            console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")  
+            console.print("Input args that need correction e.g.(--tag NTb --category tv --tmdb 12345)")
             console.print("Enter 'skip' if no correction needed", style="dim")
             editargs = Prompt.ask("")
             if editargs.lower() == 'skip':
@@ -329,7 +331,7 @@ async def do_the_thing(base_dir):
                     editargs = editargs + ("--debug",)
                 meta, help, before_args = parser.parse(editargs, meta)
                 meta['edit'] = True
-                meta = await prep.gather_prep(meta=meta, mode='cli') 
+                meta = await prep.gather_prep(meta=meta, mode='cli')
                 meta['name_notag'], meta['name'], meta['clean_name'], meta['potential_missing'] = await prep.get_name(meta)
                 confirm = get_confirmation(meta)
                 if confirm:
@@ -371,13 +373,13 @@ async def do_the_thing(base_dir):
                     continue
                 dupes = await tracker_class.search_existing(meta)
                 dupes = await common.filter_dupes(dupes, meta)
-                meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)                    
+                meta, skipped = dupe_check(dupes, meta, config, skipped_details, path)
                 if skipped:
                     skipped_files += 1
                     skipped_details.append((path, f"Potential duplicate on {tracker_class.tracker}"))
-                    continue                        
+                    continue
                 if meta['upload']:
-                    #await tracker_class.upload(meta)    
+                    #await tracker_class.upload(meta)
                     upload_success = await tracker_class.upload(meta)
                     if upload_success:
                         if tracker == 'SN':
@@ -387,7 +389,7 @@ async def do_the_thing(base_dir):
                     else:
                         skipped_files += 1
                         skipped_details.append((path, f"{tracker_class.tracker} Rejected Upload"))
-            
+
             if tracker in http_trackers:
                 tracker_class = tracker_class_map[tracker](config=config)
                 if meta['unattended']:
@@ -398,7 +400,7 @@ async def do_the_thing(base_dir):
                     console.print(f"Uploading to {tracker}")
                     if check_banned_group(tracker_class.tracker, tracker_class.banned_groups, meta, skipped_details, path):
                         skipped_files += 1
-                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))                        
+                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))
                         continue
                     if await tracker_class.validate_credentials(meta):
                         dupes = await tracker_class.search_existing(meta)
@@ -432,7 +434,7 @@ async def do_the_thing(base_dir):
                         console.print(f"[yellow]Unable to upload prep files, they can be found at `tmp/{meta['uuid']}")
                     else:
                         console.print(f"[green]{meta['name']}")
-                        console.print(f"[green]Files can be found at: [yellow]{url}[/yellow]")  
+                        console.print(f"[green]Files can be found at: [yellow]{url}[/yellow]")
 
             if tracker == "BHD":
                 bhd = BHD(config=config)
@@ -446,7 +448,7 @@ async def do_the_thing(base_dir):
                     console.print("Uploading to BHD")
                     if check_banned_group("BHD", bhd.banned_groups, meta, skipped_details, path):
                         skipped_files += 1
-                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}")) 
+                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))
                         continue
                     dupes = await bhd.search_existing(meta)
                     dupes = await common.filter_dupes(dupes, meta)
@@ -459,7 +461,7 @@ async def do_the_thing(base_dir):
                         await bhd.upload(meta)
                         await client.add_to_client(meta, "BHD")
                         successful_uploads += 1
-            
+
             if tracker == "THR":
                 if meta['unattended']:
                     upload_to_thr = True
@@ -537,7 +539,7 @@ async def do_the_thing(base_dir):
                     ptp = PTP(config=config)
                     if check_banned_group(tracker_class.tracker, tracker_class.banned_groups, meta, skipped_details, path):
                         skipped_files += 1
-                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))                                          
+                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))
                         continue
                     try:
                         console.print("[yellow]Searching for Group ID")
@@ -593,11 +595,11 @@ async def do_the_thing(base_dir):
                     console.print(f"Uploading to {tracker_class.tracker}")
                     if check_banned_group(tracker_class.tracker, tracker_class.banned_groups, meta, skipped_details, path):
                         skipped_files += 1
-                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))  
+                        skipped_details.append((path, f"Banned group on {tracker_class.tracker}"))
                         continue
                     await tracker_class.upload(meta)
                     await client.add_to_client(meta, tracker_class.tracker)
-                    successful_uploads += 1            
+                    successful_uploads += 1
 
     ### FEEDBACK ###
 
@@ -610,7 +612,7 @@ async def do_the_thing(base_dir):
             # Add a newline before each file, but not before the first one
             #if i != 0:
             formatted_text.append("\n")
-            formatted_text.append(f"• {file_name}") 
+            formatted_text.append(f"• {file_name}")
         return formatted_text
 
     if total_files > 0:
@@ -639,10 +641,10 @@ async def do_the_thing(base_dir):
         for reason, files in tracker_skip_map.items():
             reason_text = f"{reason}"
             reason_style = "bold red" if "banned" in reason.lower() or "rejected" in reason.lower() else "bold yellow"
-            
+
             path_file_map = {}
             for file, _ in files:
-                path = os.path.dirname(file) + os.sep  
+                path = os.path.dirname(file) + os.sep
                 if path not in path_file_map:
                     path_file_map[path] = []
                 path_file_map[path].append(file)
@@ -674,7 +676,7 @@ async def do_the_thing(base_dir):
             if path not in path_file_map:
                 path_file_map[path] = []
             path_file_map[path].append(file)
-        
+
         combined_renderable = []
         for i, (path, files) in enumerate(path_file_map.items()):
             if i != 0:
@@ -733,7 +735,7 @@ def get_confirmation(meta):
     if not meta.get('unattended', False):
         get_missing(meta)
         ring_the_bell = "\a" if config['DEFAULT'].get("sfx_on_prompt", True) is True else "" # \a rings the bell
-        console.print(f"[bold yellow]Is this correct?{ring_the_bell}") 
+        console.print(f"[bold yellow]Is this correct?{ring_the_bell}")
         console.print(f"[bold]Name[/bold]: {meta['name']}")
         confirm = Confirm.ask(" Correct?")
     else:
@@ -744,7 +746,7 @@ def get_confirmation(meta):
 def dupe_check(dupes, meta, config, skipped_details, path):
     if not dupes:
         console.print("[green]No dupes found")
-        meta['upload'] = True   
+        meta['upload'] = True
         return meta, False  # False indicates not skipped
 
     table = Table(
@@ -812,7 +814,7 @@ def dupe_check(dupes, meta, config, skipped_details, path):
             meta_size = meta.get('content_size')
             if meta_size is None:
                 meta_size = extract_size_from_torrent(meta['base_dir'], meta['uuid'])
-            dupe_size = int(dupe_size)   
+            dupe_size = int(dupe_size)
             if abs(meta_size - size) <= size_tolerance * meta_size:
                 cleaned_dupe_name = preprocess_string(name)
                 similarity = SequenceMatcher(None, cleaned_meta_name, cleaned_dupe_name).ratio()
@@ -836,7 +838,7 @@ def extract_size_from_torrent(base_dir, uuid):
     torrent_path = f"{base_dir}/tmp/{uuid}/BASE.torrent"
     with open(torrent_path, 'rb') as f:
         torrent_data = bencode.decode(f.read())
-    
+
     info = torrent_data[b'info']
     if b'files' in info:
         # Multi-file torrent
@@ -884,7 +886,7 @@ def get_missing(meta):
         for each in meta['potential_missing']:
             if str(meta.get(each, '')).replace(' ', '') in ["", "None", "0"]:
                 if each == "imdb_id":
-                    each = 'imdb' 
+                    each = 'imdb'
                 missing.append(f"--{each} | {info_notes.get(each)}")
     if missing != []:
         console.print(Rule("Potentially missing information", style="bold yellow"))
@@ -917,4 +919,3 @@ if __name__ == '__main__':
             loop.run_until_complete(do_the_thing(base_dir))
         else:
             asyncio.run(do_the_thing(base_dir))
-        

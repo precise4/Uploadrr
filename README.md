@@ -78,7 +78,7 @@ docker run --rm -it --network=host \
 -v /path/to/config.py:/Uploadrr/data/config.py \
 -v /path/to/media:/media \
 -v /path/to/BT_backup:/BT_backup \
-ghcr.io/z-ink/uploadrr:master "/path/to/media" --args
+ghcr.io/precise4/uploadrr:master "/path/to/media" --args
 ```  
 Or:
 ```

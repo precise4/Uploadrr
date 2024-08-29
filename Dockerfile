@@ -3,7 +3,6 @@ FROM alpine:latest AS build
 
 # Install build dependencies and tools
 RUN apk add --no-cache \
-    mono \
     python3 \
     python3-dev \
     py3-pip \
@@ -23,6 +22,8 @@ RUN pip install -r requirements.txt
 
 # Stage 2: Final Image
 FROM alpine:latest
+
+RUN apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 # Install runtime dependencies
 RUN apk add --no-cache \

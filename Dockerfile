@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 COPY . /app
 
 # Stage 2: Final Image
-FROM alpine:latest
+FROM alpine:latest as runtime
 
 RUN apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
@@ -43,11 +43,8 @@ COPY --from=build /app /app
 # Set environment variables
 ENV PATH="/venv/bin:$PATH"
 
-# Change working directory
-WORKDIR /app
-
-# Copy application code
-COPY . .
+VOLUME ["/videos"]
+WORKDIR /videos
 
 # Set the entry point for the container
-ENTRYPOINT ["python3", "/app/upload.py"]
+ENTRYPOINT ["/venv/bin/python3", "/app/upload.py"]

@@ -20,6 +20,8 @@ ENV PATH="/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+COPY . /app
+
 # Stage 2: Final Image
 FROM alpine:latest
 

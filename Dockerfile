@@ -4,7 +4,7 @@ FROM alpine:latest
 RUN apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 # install requirements
-RUN apk add --no-cache --upgrade ffmpeg mediainfo python3 git py3-pip python3-dev python3-tkinter g++ cargo mktorrent rust
+RUN apk add --no-cache --upgrade ffmpeg mediainfo python3 git py3-pip mktorrent
 
 # create virtual environment
 RUN python3 -m venv /venv

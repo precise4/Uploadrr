@@ -1,4 +1,4 @@
-version = "1.0.3"
+version = "1.0.4"
 
 [DEFAULT]
 tmdb_api = "TMDB_API_KEY"
@@ -7,6 +7,7 @@ ptpimg_api = "ptpimg_API_KEY"
 lensdump_api = "lensdump_API_KEY"
 ptscreens_api = "ptscreens_API_KEY"
 oeimg_api = "oeimg_API_KEY"
+catbox_userhash = ""
 img_host_1 = "imgbb"
 img_host_2 = "ptpimg"
 img_host_3 = "imgbox"
@@ -14,6 +15,7 @@ img_host_4 = "pixhost"
 img_host_5 = "lensdump"
 img_host_6 = "ptscreens"
 img_host_7 = "oeimg"
+img_host_8 = "catbox"
 screens = "6"
 img_size = "500"
 optimize_images = true

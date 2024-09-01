@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 COPY . /app
 
 # Stage 2: Final Image
-FROM alpine:latest as runtime
+FROM alpine:latest AS runtime
 
 RUN apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
 

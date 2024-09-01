@@ -2334,6 +2334,27 @@ class Prep():
                                 progress.console.print("[yellow]lensdump failed, trying next image host")
                                 progress.stop()
                                 newhost_list, i = self.upload_screens(meta, screens - i , img_host_num + 1, i, total_screens, [], return_dict)
+                        elif img_host == "catbox":
+                            url = "https://catbox.moe/user/api.php"
+                            data = {
+                                'reqtype': 'fileupload',
+                                'userhash': self.config['DEFAULT']['catbox_userhash'],  # Optional: If you have a userhash, you can include it here
+                            }
+                            files = {
+                                'fileToUpload': open(image, "rb")
+                            }
+                            try:
+                                response = requests.post(url, data=data, files=files, timeout=timeout)
+                                response = response.json()
+                                if response.get('status_code') != 200:
+                                    progress.console.print(response)
+                                img_url = response['url']
+                                raw_url = img_url
+                                web_url = img_url  # Catbox.moe uses the same URL for both the direct image and the viewer
+                            except Exception:
+                                progress.console.print("[yellow]catbox.moe failed, trying next image host")
+                                progress.stop()
+                                newhost_list, i = self.upload_screens(meta, screens - i, img_host_num + 1, i, total_screens, [], return_dict)
                         else:
                             console.print("[bold red]Please choose a supported image host in your config")
                             exit()

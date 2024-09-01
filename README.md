@@ -1,7 +1,8 @@
 # ![Uploadrr](https://i.ibb.co/2NVWb0c/uploadrr.webp)
 
-I have no clue what I'm doing so thought I'd fork it, bork it and, duct tape it back together to get people to sing my praises. 
-Hopefully it works and makes your life simplier.
+Upload util now to compete with the plethra of other forks, but will take maybe a slightly different approach with a bit more opinonated jank and a focus on what i use it for
+
+![the state of play](https://imgs.xkcd.com/comics/standards.png)
 
 ## What It Can Do:
   - Generates and Parses MediaInfo/BDInfo.

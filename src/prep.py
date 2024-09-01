@@ -2338,19 +2338,18 @@ class Prep():
                             url = "https://catbox.moe/user/api.php"
                             data = {
                                 'reqtype': 'fileupload',
-                                'userhash': self.config['DEFAULT']['catbox_userhash'],  # Optional: If you have a userhash, you can include it here
+                                'userhash': self.config['DEFAULT']['catbox_userhash'],  # Optional: If you have a userhash, you can include it her
                             }
                             files = {
                                 'fileToUpload': open(image, "rb")
                             }
                             try:
                                 response = requests.post(url, data=data, files=files, timeout=timeout)
-                                response = response.json()
-                                if response.get('status_code') != 200:
-                                    progress.console.print(response)
-                                img_url = response['url']
+                                if response.status_code != 200:
+                                    progress.console.print(f"Error: {response.status_code}")
+                                img_url = response.text.strip()
                                 raw_url = img_url
-                                web_url = img_url  # Catbox.moe uses the same URL for both the direct image and the viewer
+                                web_url = img_url  # Catbox.moe uses the same URL for both direct image and viewer
                             except Exception:
                                 progress.console.print("[yellow]catbox.moe failed, trying next image host")
                                 progress.stop()

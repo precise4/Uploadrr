@@ -31,16 +31,8 @@ Upload util now to compete with the plethra of other forks, but will take maybe 
 | ULCX | UTP    | VHD  |      |      |      |      |      |
 
 
-
-
-
-
-
 ## Coming Soon:
-  - Better support for FANRES & Adult Content
-  - Better support for Music & Ebooks 
-
-  
+  - Better support for personal releases (comparisons and description templating)
 
 ## **Setup:**
    - **REQUIRES AT LEAST PYTHON 3.7 AND PIP3**
